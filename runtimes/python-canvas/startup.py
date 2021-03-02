@@ -1,6 +1,6 @@
 """Startup script for python-canvas runtime of livecode.
 
-It adds the functionis circle and line to the builtins before 
+It adds the functionis circle and line to the builtins before
 calling main.py.
 """
 import os.path
@@ -16,6 +16,9 @@ def circle(x, y, d):
 
 def line(x1, y1, x2, y2):
     _draw("line", x1=x1, y1=y1, x2=x2, y2=y2)
+
+def clear():
+    _draw("clear")
 
 __builtins__.circle = circle
 __builtins__.line = line

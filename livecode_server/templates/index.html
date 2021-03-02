@@ -201,6 +201,9 @@ textarea {
         ctx.moveTo(args.x1, args.y1);
         ctx.lineTo(args.x2, args.y2);
         ctx.stroke();
+      },
+      clear: function(ctx, args) {
+        clearCanvas();
       }
     }
     if (!canvas_element) {
