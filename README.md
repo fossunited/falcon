@@ -1,4 +1,4 @@
-# LiveCode - Environment to run code in any programming language
+# [<>] LiveCode - Run code directly from your browser
 
 LiveCode is a service that execute code in any programming language in a sandboxed environment.
 
