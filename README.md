@@ -135,6 +135,16 @@ Example:
 
 As of now, there is no support for printing binary data.
 
+**`exitstatus`**
+
+Sent after the execution is complete.
+
+Example:
+
+```
+{"msgtype": "exitstatus", "exitstatus": 0}
+```
+
 **`error`**
 
 Sent when a received message can not be processed by the server.

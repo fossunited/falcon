@@ -4,6 +4,7 @@ from starlette.applications import Starlette
 from starlette.responses import JSONResponse
 from starlette.routing import Route, WebSocketRoute
 from starlette.endpoints import WebSocketEndpoint
+from .kernel import Kernel
 
 async def home(request):
     return JSONResponse({"app": "livecode"})
@@ -39,7 +40,13 @@ class LiveCode(WebSocketEndpoint):
         await ws.close()
 
     async def on_exec(self, ws, msg):
-        await ws.send_json({"msgtype": "error", "error": "Not yet implemented.", "source": msg})
+        runtime = msg['runtime']
+        code = msg['code']
+        env = msg.get('env') or {}
+
+        k = Kernel(ws, runtime)
+        await k.execute(code, env)
+        await ws.close()
 
     async def on_unknown_message(self, ws, msg):
         msgtype = msg.get("msgtype")
