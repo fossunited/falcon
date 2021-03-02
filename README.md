@@ -29,7 +29,7 @@ INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 Step 4: Start interacting with the live code server
 
 ```
-➜ wscat --connect http://127.0.0.1:8000/livecode
+$ wscat --connect http://127.0.0.1:8000/livecode
 Connected (press CTRL+C to quit)
 < {"msgtype": "welcome", "message": "welcome to livecode"}
 > {"msgtype": "ping"}
@@ -86,7 +86,7 @@ Request to quit the connection.
 Example:
 
 ```
-{"msgtype": " quit"}
+{"msgtype": "quit"}
 ```
 
 **`event`**

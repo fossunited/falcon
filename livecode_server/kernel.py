@@ -15,7 +15,7 @@ class Kernel:
             self.save_file(root, "main.py", code)
 
             image = "python:3.9"
-            command = ["python", "mai2.py"]
+            command = ["python", "main.py"]
 
             container = await self.start_container(image, command, root)
 
