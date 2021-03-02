@@ -4,6 +4,17 @@ import aiodocker
 from pathlib import Path
 import tempfile
 
+KERNEL_SPEC = {
+    "python": {
+        "image": "python:3.9",
+        "command": ["python", "main.py"]
+    },
+    "python-canvas": {
+        "image": "livecode-python-canvas",
+        "command": ["python", "/opt/startup.py"]
+    }
+}
+
 class Kernel:
     def __init__(self, ws, runtime):
         self.ws = ws
@@ -14,10 +25,8 @@ class Kernel:
             self.root = root
             self.save_file(root, "main.py", code)
 
-            image = "python:3.9"
-            command = ["python", "main.py"]
-
-            container = await self.start_container(image, command, root)
+            kspec = KERNEL_SPEC[self.runtime]
+            container = await self.start_container(kspec['image'], kspec['command'], root)
 
             # TODO: read stdout and stderr seperately
             try:

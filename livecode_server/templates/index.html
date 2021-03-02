@@ -11,26 +11,83 @@
 </div>
 
 <div class="container-fluid">
-  <div class="x-row">
-    <div class="x-col">
-      <div class="section editor">
-        <div class="heading">
-          <button id="run" style="float: right;">Run</button>
-          <h2>Editor</h2>
-        </div>
-        <textarea id="code" style="width: 100%;" rows="18">
+  <ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <a class="nav-link active" id="python-tab" data-toggle="tab" href="#python" role="tab" aria-controls="python" aria-selected="true">Python</a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link" id="canvas-tab" data-toggle="tab" href="#canvas" role="tab" aria-controls="canvas" aria-selected="false">Python+Canvas</a>
+    </li>
+  </ul>
+  <div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="python" role="tabpanel" aria-labelledby="python-tab"
+      data-runtime="python">
+      <div class="x-row">
+        <div class="x-col">
+          <div class="section editor">
+            <div class="heading">
+              <button class="run" style="float: right;">Run</button>
+              <h2>Editor</h2>
+            </div>
+            <textarea class="code" style="width: 100%;" rows="18">
 import time
 
 for i in range(10):
   time.sleep(1)
   print(i)
-          </textarea>
+              </textarea>
+          </div>
+        </div>
+        <div class="x-col">
+          <div class="section preview">
+            <div class="heading"><h2>Output</h2></div>
+            <pre class="output m-1"></pre>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="x-col">
-      <div class="section preview">
-        <div class="heading"><h2>Output</h2></div>
-        <pre id="output" class="m-1"></pre>
+    <div class="tab-pane fade show" id="canvas" role="tabpanel" aria-labelledby="canvas-tab"
+        data-runtime="python-canvas">
+      <div class="x-row">
+        <div class="x-col">
+          <div class="section editor">
+            <div class="heading">
+              <button class="run" style="float: right;">Run</button>
+              <h2>Editor</h2>
+            </div>
+            <textarea class="code" style="width: 100%;" rows="18">
+"""
+Program to draw random concentric circles in a 5x5 grid.
+"""
+import random
+
+width = 300
+height = 300
+
+def random_concentric_circles(x, y, d, n=10):
+    for i in range(n):
+        circle(x, y, random.randint(0, d))
+
+def draw_grid(shape, n=5):
+    size = width/n
+    for i in range(n):
+        for j in range(n):
+            x = size*i+size/2
+            y = size*j+size/2
+            shape(x, y, size)
+
+draw_grid(random_concentric_circles)            </textarea>
+          </div>
+        </div>
+        <div class="x-col">
+          <div class="section preview">
+            <div class="heading"><h2>Output</h2></div>
+            <canvas class="canvas" width="300" height="300" style="float: left; border: 1px solid #ddd; padding: 5px; margin: 10px;"></canvas>
+            <pre class="output" style="float: left; padding: 10px;">
+            </pre>
+          </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -86,6 +143,9 @@ textarea {
   var ws_url = "ws://" + document.location.host + "/livecode";
   var ws = null;
 
+  var $output;
+  var canvas_element;
+
   function run() {
     if (ws) {
       ws.close();
@@ -96,20 +156,70 @@ textarea {
       var msg = JSON.parse(event.data);
       console.log("received", msg);
       if (msg.msgtype == "write") {
-        $("#output").append(msg.data);
+        showOutput(msg.data);
       }
     }
-    var code = $("#code").val();
+    var code = $(".tab-pane.active .code").val();
+    var runtime = $(".tab-pane.active").attr("data-runtime");
+
+    $output = $(".tab-pane.active .output")
+    var $canvas = $(".tab-pane.active .canvas")
+    canvas_element = $canvas.length ? $canvas[0]: null;
+
     var msg = {
       "msgtype": "exec",
-      "runtime": "python",
+      "runtime": runtime,
       "code": code
     }
     waitForOpen(ws, () => {
-      $("#output").html("");
+      $output.html("");
+      clearCanvas();
       console.log("sending", msg);
       ws.send(JSON.stringify(msg))
     });
+  }
+
+  function showOutput(data) {
+    if (data.startsWith("--DRAW--")) {
+      var draw_cmd = data.replace("--DRAW-- ", "")
+      drawOnCanvas(JSON.parse(draw_cmd))
+    }
+    else {
+      $output.append(data);
+    }
+  }
+
+  function drawOnCanvas(cmd) {
+    var functions = {
+      circle: function(ctx, args) {
+        ctx.beginPath();
+        ctx.arc(args.x, args.y, args.d/2, 0, 2*Math.PI);
+        ctx.stroke();
+      },
+      line: function(ctx, args) {
+        ctx.beginPath();
+        ctx.moveTo(args.x1, args.y1);
+        ctx.lineTo(args.x2, args.y2);
+        ctx.stroke();
+      }
+    }
+    if (!canvas_element) {
+      return
+    }
+
+    var ctx = canvas_element.getContext('2d');
+    var name = cmd['function']
+    var func = functions[name]
+    func(ctx, cmd)
+  }
+  function clearCanvas() {
+    if (!canvas_element) {
+      return
+    }
+    var ctx = canvas_element.getContext('2d');
+    var width = canvas_element.width;
+    var height = canvas_element.height;
+    ctx.clearRect(0, 0, width, height);
   }
 
   function waitForOpen(ws, func) {
@@ -122,7 +232,7 @@ textarea {
   }
 
   $(function() {
-    $("#run").click(run);
+    $("button.run").click(run);
   })
 </script>
 {% endblock %}
