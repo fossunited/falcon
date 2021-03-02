@@ -38,6 +38,7 @@ Connected (press CTRL+C to quit)
 > {"msgtype": "write", "file": "stdout", "data": "hello, world!\n"}
 > {"msgtype": "quit"}
 < {"msgtype": "goodbye"}
+```
 
 ## The Live Code Protocol
 
