@@ -4,12 +4,14 @@ LiveCode is a service that execute code in any programming language in a sandbox
 
 It uses websockets for bidrectional communication and can support interactive applications with support for keyboard and mouse.
 
-## Quick Demo
+## The Setup
 
-Step 1: Install `wscat`
+Step 1: Clone the repository
 
 ```
-$ npm install -g wscat
+$ git clone https://github.com/fossunited/livecode
+
+$ cd livecode
 ```
 
 Step 2: Install Python dependencies. You may want to do this in a virtualenv.
@@ -26,7 +28,17 @@ INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 ...
 ```
 
-Step 4: Start interacting with the live code server
+Step 4: visit the webapp at <http://127.0.0.1:8000/>.
+
+## Low-level Interaction
+
+Install `wscat`:
+
+```
+$ npm install -g wscat
+```
+
+Start interacting with the live code server:
 
 ```
 $ wscat --connect http://127.0.0.1:8000/livecode
