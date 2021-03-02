@@ -1,13 +1,18 @@
 """livecode server.
 """
 from starlette.applications import Starlette
+from starlette.endpoints import WebSocketEndpoint
 from starlette.responses import JSONResponse
 from starlette.routing import Route, WebSocketRoute
-from starlette.endpoints import WebSocketEndpoint
+from starlette.templating import Jinja2Templates
+
 from .kernel import Kernel
+from .utils import templates_dir
+
+templates = Jinja2Templates(directory=templates_dir)
 
 async def home(request):
-    return JSONResponse({"app": "livecode"})
+    return templates.TemplateResponse('index.html', {'request': request})
 
 class LiveCode(WebSocketEndpoint):
     """The websocket endpoint for livecode.
@@ -58,5 +63,5 @@ class LiveCode(WebSocketEndpoint):
 
 app = Starlette(routes=[
     Route('/', home),
-    WebSocketRoute("/livecode", LiveCode),
+    WebSocketRoute("/livecode", LiveCode)
 ])

@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+  <h1 class="display-4">LiveCode</h1>
+  <p class="lead">Runs code directly from your the browser.</p>
+  <hr class="my-4">
+  <p>It uses websockets for bidrectional communication and supports applications with keyboard and mouse interaction.</p>
+  <a class="btn btn-primary btn-lg" href="https://github.com/fossunited/livecode" role="button">Learn more</a>
+</div>
+
+<div class="container-fluid">
+  <div class="x-row">
+    <div class="x-col">
+      <div class="section editor">
+        <div class="heading">
+          <button id="run" style="float: right;">Run</button>
+          <h2>Editor</h2>
+        </div>
+        <textarea id="code" style="width: 100%;" rows="18">
+import time
+
+for i in range(10):
+  time.sleep(1)
+  print(i)
+          </textarea>
+      </div>
+    </div>
+    <div class="x-col">
+      <div class="section preview">
+        <div class="heading"><h2>Output</h2></div>
+        <pre id="output" class="m-1"></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="clearfix"></div>
+
+<style type="text/css">
+.x-col {
+    float: left;
+    width: 50%;
+    height: 500px;
+    background: #ddd;
+    border: 1px solid #aaa;
+}
+div.section {
+    border: 1px solid #ddd;
+    height: 100%;
+    background: #fff;
+}
+div.heading {
+    padding: 5px 10px;
+    background: #eee;
+    height: 45px;
+    border: 1px solid #ddd;
+}
+div.heading h2 {
+    font-size: 1.2em;
+    text-transform: uppercase;
+    padding-top: 5px;
+    color: #444;
+}
+textarea {
+  padding: 10px;
+}
+/* .CodeMirror {
+    border: 1px solid #eee;
+    height: auto;
+    font-size: 2.5em;
+}
+.CodeMirror-scroll {
+    height: 440px;
+}
+.CodeMirror pre {
+    padding-left: 7px;
+    line-height: 1.25;
+} */
+</style>
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+  var ws_url = "ws://" + document.location.host + "/livecode";
+  var ws = null;
+
+  function run() {
+    if (ws) {
+      ws.close();
+      ws = null;
+    }
+    ws = new WebSocket(ws_url);
+    ws.onmessage = function(event) {
+      var msg = JSON.parse(event.data);
+      console.log("received", msg);
+      if (msg.msgtype == "write") {
+        $("#output").append(msg.data);
+      }
+    }
+    var code = $("#code").val();
+    var msg = {
+      "msgtype": "exec",
+      "runtime": "python",
+      "code": code
+    }
+    waitForOpen(ws, () => {
+      $("#output").html("");
+      console.log("sending", msg);
+      ws.send(JSON.stringify(msg))
+    });
+  }
+
+  function waitForOpen(ws, func) {
+    if (ws.readyState == ws.OPEN) {
+      func()
+    }
+    else {
+      setTimeout(() => waitForOpen(ws, func), 1)
+    }
+  }
+
+  $(function() {
+    $("#run").click(run);
+  })
+</script>
+{% endblock %}
