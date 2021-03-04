@@ -187,3 +187,8 @@ For example, a program can send a message to draw on a canvas.
 ```
 {"msgtype": "draw", "shape": "circle", "args": [100, 100, 50]}
 ```
+
+## LICENSE
+
+This repository has been released under the [MIT License](https://github.com/fossunited/livecode/blob/main/LICENSE).
+
