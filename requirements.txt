@@ -1,4 +1,5 @@
 starlette
 aiofiles
-uvicorn
+uvicorn[standard]
 Jinja2
+aiodocker
