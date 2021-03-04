@@ -4,6 +4,13 @@ LiveCode is a service that execute code in any programming language in a sandbox
 
 It uses websockets for bidrectional communication and can support interactive applications with support for keyboard and mouse.
 
+## Requirements
+
+LiveCode runs on any unix computer and the following software are required.
+
+* Python 3
+* Docker
+
 ## The Setup
 
 Step 1: Clone the repository
@@ -20,7 +27,13 @@ Step 2: Install Python dependencies. You may want to do this in a virtualenv.
 $ pip install -r requirements.txt
 ```
 
-Step 3: Start the live code server
+Step 3: Build the required docker images
+
+```
+$ make setup
+```
+
+Step 4: Start the live code server
 
 ```
 $ uvicorn livecode_server.server:app
@@ -28,7 +41,7 @@ INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 ...
 ```
 
-Step 4: visit the webapp at <http://127.0.0.1:8000/>.
+Step 5: visit the webapp at <http://127.0.0.1:8000/>.
 
 ## Low-level Interaction
 
