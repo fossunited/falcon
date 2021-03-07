@@ -158,6 +158,9 @@ textarea {
       if (msg.msgtype == "write") {
         showOutput(msg.data);
       }
+      else if (msg.msgtype == "draw") {
+        drawOnCanvas(msg.cmd);
+      }
     }
     var code = $(".tab-pane.active .code").val();
     var runtime = $(".tab-pane.active").attr("data-runtime");
@@ -180,13 +183,7 @@ textarea {
   }
 
   function showOutput(data) {
-    if (data.startsWith("--DRAW--")) {
-      var draw_cmd = data.replace("--DRAW-- ", "")
-      drawOnCanvas(JSON.parse(draw_cmd))
-    }
-    else {
-      $output.append(data);
-    }
+    $output.append(data);
   }
 
   function drawOnCanvas(cmd) {

@@ -3,6 +3,7 @@
 import aiodocker
 from pathlib import Path
 import tempfile
+import json
 
 KERNEL_SPEC = {
     "python": {
@@ -33,7 +34,12 @@ class Kernel:
                 logs = container.log(stdout=True, stderr=True, follow=True)
                 await self.ws.send_json({"msgtype": "debug", "message": "started container\n"})
                 async for line in logs:
-                    await self.ws.send_json({"msgtype": "write", "file": "stdout", "data": line})
+                    if line.startswith("--DRAW--"):
+                        cmd = line[len("--DRAW--"):].strip()
+                        msg = dict(msgtype="draw", cmd=json.loads(cmd))
+                    else:
+                        msg = dict(msgtype="write", file="stdout", data=line)
+                    await self.ws.send_json(msg)
             finally:
                 status = await container.wait()
                 await self.ws.send_json({"msgtype": "exitstatus", "exitstatus": status['StatusCode']})
