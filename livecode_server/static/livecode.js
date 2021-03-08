@@ -52,7 +52,7 @@ class LiveCodeSession {
   }
 
   waitForOpen(ws, func) {
-=    if (ws.readyState == ws.OPEN) {
+    if (ws.readyState == ws.OPEN) {
       func()
     }
     else {
