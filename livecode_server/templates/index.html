@@ -13,14 +13,14 @@
 <div class="container-fluid">
   <ul class="nav nav-tabs" id="myTab" role="tablist">
     <li class="nav-item" role="presentation">
-      <a class="nav-link active" id="python-tab" data-toggle="tab" href="#python" role="tab" aria-controls="python" aria-selected="true">Python</a>
+      <a class="nav-link active" id="python-tab" data-toggle="tab" href="#python-editor" role="tab" aria-controls="python" aria-selected="true">Python</a>
     </li>
     <li class="nav-item" role="presentation">
-      <a class="nav-link" id="canvas-tab" data-toggle="tab" href="#canvas" role="tab" aria-controls="canvas" aria-selected="false">Python+Canvas</a>
+      <a class="nav-link" id="canvas-tab" data-toggle="tab" href="#canvas-editor" role="tab" aria-controls="canvas" aria-selected="false">Python+Canvas</a>
     </li>
   </ul>
   <div class="tab-content" id="myTabContent">
-    <div class="tab-pane fade show active" id="python" role="tabpanel" aria-labelledby="python-tab"
+    <div class="tab-pane fade show active" id="python-editor" role="tabpanel" aria-labelledby="python-tab"
       data-runtime="python">
       <div class="x-row">
         <div class="x-col">
@@ -46,7 +46,7 @@ for i in range(10):
         </div>
       </div>
     </div>
-    <div class="tab-pane fade show" id="canvas" role="tabpanel" aria-labelledby="canvas-tab"
+    <div class="tab-pane fade show" id="canvas-editor" role="tabpanel" aria-labelledby="canvas-tab"
         data-runtime="python-canvas">
       <div class="x-row">
         <div class="x-col">
@@ -139,100 +139,19 @@ textarea {
 {% endblock %}
 
 {% block extrascripts %}
+<script type="text/javascript" src="/static/livecode.js"></script>
+
 <script type="text/javascript">
-  var ws_url = "ws://" + document.location.host + "/livecode";
-  var ws = null;
-
-  var $output;
-  var canvas_element;
-
-  function run() {
-    if (ws) {
-      ws.close();
-      ws = null;
-    }
-    ws = new WebSocket(ws_url);
-    ws.onmessage = function(event) {
-      var msg = JSON.parse(event.data);
-      console.log("received", msg);
-      if (msg.msgtype == "write") {
-        showOutput(msg.data);
-      }
-      else if (msg.msgtype == "draw") {
-        drawOnCanvas(msg.cmd);
-      }
-    }
-    var code = $(".tab-pane.active .code").val();
-    var runtime = $(".tab-pane.active").attr("data-runtime");
-
-    $output = $(".tab-pane.active .output")
-    var $canvas = $(".tab-pane.active .canvas")
-    canvas_element = $canvas.length ? $canvas[0]: null;
-
-    var msg = {
-      "msgtype": "exec",
-      "runtime": runtime,
-      "code": code
-    }
-    waitForOpen(ws, () => {
-      $output.html("");
-      clearCanvas();
-      console.log("sending", msg);
-      ws.send(JSON.stringify(msg))
-    });
-  }
-
-  function showOutput(data) {
-    $output.append(data);
-  }
-
-  function drawOnCanvas(cmd) {
-    var functions = {
-      circle: function(ctx, args) {
-        ctx.beginPath();
-        ctx.arc(args.x, args.y, args.d/2, 0, 2*Math.PI);
-        ctx.stroke();
-      },
-      line: function(ctx, args) {
-        ctx.beginPath();
-        ctx.moveTo(args.x1, args.y1);
-        ctx.lineTo(args.x2, args.y2);
-        ctx.stroke();
-      },
-      clear: function(ctx, args) {
-        clearCanvas();
-      }
-    }
-    if (!canvas_element) {
-      return
-    }
-
-    var ctx = canvas_element.getContext('2d');
-    var name = cmd['function']
-    var func = functions[name]
-    func(ctx, cmd)
-  }
-  function clearCanvas() {
-    if (!canvas_element) {
-      return
-    }
-    var ctx = canvas_element.getContext('2d');
-    var width = canvas_element.width;
-    var height = canvas_element.height;
-    ctx.clearRect(0, 0, width, height);
-  }
-
-  function waitForOpen(ws, func) {
-    if (ws.readyState == ws.OPEN) {
-      func()
-    }
-    else {
-      setTimeout(() => waitForOpen(ws, func), 1)
-    }
-  }
-
-  $(function() {
-    $("button.run").click(run);
+$(function() {
+  var pythonEditor = new LiveCodeEditor(document.querySelector("#python-editor"), {
+    base_url: document.location.protocol + "//" + document.location.host,
+    runtime: "python"
   })
+
+  var canvasEditor = new LiveCodeEditor(document.querySelector("#canvas-editor"), {
+    base_url: document.location.protocol + "//" + document.location.host,
+    runtime: "python-canvas"
+  })
+})
 </script>
 {% endblock %}

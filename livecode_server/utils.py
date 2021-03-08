@@ -5,3 +5,4 @@ def get_module_relative_path(path):
     return str(root)
 
 templates_dir = get_module_relative_path("templates")
+static_dir = get_module_relative_path("static")

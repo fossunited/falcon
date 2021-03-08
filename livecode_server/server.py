@@ -3,11 +3,12 @@
 from starlette.applications import Starlette
 from starlette.endpoints import WebSocketEndpoint
 from starlette.responses import JSONResponse
-from starlette.routing import Route, WebSocketRoute
+from starlette.routing import Route, WebSocketRoute, Mount
 from starlette.templating import Jinja2Templates
+from starlette.staticfiles import StaticFiles
 
 from .kernel import Kernel
-from .utils import templates_dir
+from .utils import templates_dir, static_dir
 
 templates = Jinja2Templates(directory=templates_dir)
 
@@ -61,7 +62,10 @@ class LiveCode(WebSocketEndpoint):
             "msg": msg
         })
 
+
+
 app = Starlette(routes=[
     Route('/', home),
-    WebSocketRoute("/livecode", LiveCode)
+    WebSocketRoute("/livecode", LiveCode),
+    Mount('/static', app=StaticFiles(directory=static_dir), name="static"),
 ])
