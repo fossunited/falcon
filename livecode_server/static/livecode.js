@@ -22,7 +22,8 @@ class LiveCodeSession {
   }
 
   createWebSocket() {
-    let ws_url = "ws://" + this.base_url.host + "/livecode";
+    let protocol = this.base_url.protocol == "https:" ? "wss:" : "ws:";
+    let ws_url = protocol + "//" + this.base_url.host + "/livecode";
     let ws = new WebSocket(ws_url);
     ws.addEventListener("open", (ev) => this.processOpen(ev));
     ws.addEventListener("close", (ev) => this.processClose(ev));
