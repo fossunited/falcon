@@ -69,6 +69,24 @@ class LiveCodeSession {
   }
 }
 
+LIVECODE_CODEMIRROR_OPTIONS = {
+  common: {
+    lineNumbers: true,
+    keyMap: "sublime",
+    matchBrackets: true,
+    indentWithTabs: false,
+    tabSize: 4,
+    indentUnit: 4,
+    extraKeys: {}
+  },
+  python: {
+    mode: "python"
+  },
+  "python-canvas": {
+    mode: "python"
+  }
+}
+
 // Initialized the editor and all controls.
 // It is expected that the given element is a parent element
 // with textarea, div.output, button.run optionally canvas.canvas
@@ -87,6 +105,7 @@ class LiveCodeEditor {
     this.elementOutput = this.parent.querySelector(".output");
     this.elementRun = this.parent.querySelector(".run");
     this.elementCanvas = this.parent.querySelector(".canvas");
+    this.codemirror = null;
 
     this.setupActions()
   }
@@ -98,17 +117,40 @@ class LiveCodeEditor {
     this.clearOutput();
     this.clearCanvas();
   }
+  run() {
+    this.reset();
+    this.session = new LiveCodeSession({
+      base_url: this.base_url,
+      runtime: this.runtime,
+      code: this.getCode(),
+      onMessage: (msg) => this.onMessage(msg)
+    });
+  }
   setupActions() {
-    this.elementRun.onclick = () => {
-      var code =
-      this.reset();
-      this.session = new LiveCodeSession({
-        base_url: this.base_url,
-        runtime: this.runtime,
-        code: this.elementCode.value,
-        onMessage: (msg) => this.onMessage(msg)
-      });
-    };
+    this.elementRun.onclick = () => this.run();
+
+    if (this.options.codemirror) {
+      const options = {
+        ...LIVECODE_CODEMIRROR_OPTIONS.common,
+        ...LIVECODE_CODEMIRROR_OPTIONS[this.runtime]
+      }
+      if (this.options.codemirror instanceof Object) {
+        options = {...options, ...this.options.codemirror}
+      }
+      options.extraKeys['Cmd-Enter'] = () => this.run()
+      options.extraKeys['Ctrl-Enter'] = () => this.run()
+
+      this.codemirror = CodeMirror.fromTextArea(this.elementCode, options)
+    }
+  }
+
+  getCode() {
+    if (this.codemirror) {
+      return this.codemirror.doc.getValue()
+    }
+    else {
+      return this.elementCode.value;
+    }
   }
 
   onMessage(msg) {
