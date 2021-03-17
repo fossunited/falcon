@@ -175,6 +175,10 @@ class LiveCodeEditor {
         ctx.lineTo(args.x2, args.y2);
         ctx.stroke();
       },
+      rect: function(ctx, args) {
+        ctx.rect(args.x, args.y, args.w, args.h);
+        ctx.stroke();
+      },
       clear: function(ctx, args) {
         clearCanvas();
       }
