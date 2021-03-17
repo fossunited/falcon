@@ -12,16 +12,33 @@ def _draw(function, **kwargs):
     print("--DRAW--", json.dumps(dict(function=function, **kwargs)))
 
 def circle(x, y, d):
+    """Draws a circle of diameter d with center (x, y).
+    """
     _draw("circle", x=x, y=y, d=d)
 
 def line(x1, y1, x2, y2):
+    """Draws a line from point (x1, y1) to point (x2, y2).
+    """
     _draw("line", x1=x1, y1=y1, x2=x2, y2=y2)
+
+def rect(x, y, w, h):
+    """Draws a rectangle on the canvas.
+
+    Parameters
+    ----------
+    x: x coordinate of the top-left corner of the rectangle
+    y: y coordinate of the top-left corner of the rectangle
+    w: width of the rectangle
+    h: height of the rectangle
+    """
+    _draw("rect", x=x, y=y, w=w, h=h)
 
 def clear():
     _draw("clear")
 
 __builtins__.circle = circle
 __builtins__.line = line
+__builtins__.rect = rect
 
 if os.path.exists("main.py"):
     exec(open("main.py").read())
