@@ -176,6 +176,7 @@ class LiveCodeEditor {
         ctx.stroke();
       },
       rect: function(ctx, args) {
+        ctx.beginPath();
         ctx.rect(args.x, args.y, args.w, args.h);
         ctx.stroke();
       },
