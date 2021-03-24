@@ -77,7 +77,13 @@ LIVECODE_CODEMIRROR_OPTIONS = {
     indentWithTabs: false,
     tabSize: 4,
     indentUnit: 4,
-    extraKeys: {}
+    extraKeys: {
+      Tab: (cm) => {
+        cm.somethingSelected()
+        ? cm.execCommand('indentMore')
+        : cm.execCommand('insertSoftTab');
+      }
+    }
   },
   python: {
     mode: "python"
@@ -146,7 +152,8 @@ class LiveCodeEditor {
 
   getCode() {
     if (this.codemirror) {
-      return this.codemirror.doc.getValue()
+      var code = this.codemirror.doc.getValue()
+      return code.replaceAll("\t", " ".repeat(this.codemirror.options.indentUnit))
     }
     else {
       return this.elementCode.value;
