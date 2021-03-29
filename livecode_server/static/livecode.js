@@ -110,6 +110,8 @@ class LiveCodeEditor {
     this.elementCode = this.parent.querySelector(".code");
     this.elementOutput = this.parent.querySelector(".output");
     this.elementRun = this.parent.querySelector(".run");
+    this.elementClear = this.parent.querySelector(".clear");
+    this.elementReset = this.parent.querySelector(".reset");
     this.elementCanvas = this.parent.querySelector(".canvas");
     this.codemirror = null;
 
@@ -124,6 +126,7 @@ class LiveCodeEditor {
     this.clearCanvas();
   }
   run() {
+    this.triggerEvent("beforeRun");
     this.reset();
     this.session = new LiveCodeSession({
       base_url: this.base_url,
@@ -132,8 +135,21 @@ class LiveCodeEditor {
       onMessage: (msg) => this.onMessage(msg)
     });
   }
+  triggerEvent(name) {
+      var events = this.options.events;
+      if (events && events[name]) {
+        console.log(events[name]);
+	events[name](this);
+      }
+  }
   setupActions() {
     this.elementRun.onclick = () => this.run();
+    if (this.elementClear) {
+	this.elementClear.onclick = () => this.triggerEvent("clear");
+    }
+    if (this.elementReset) {
+	this.elementReset.onclick = () => this.triggerEvent("reset");
+    }
 
     if (this.options.codemirror) {
       const options = {
