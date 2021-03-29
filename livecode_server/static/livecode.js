@@ -214,7 +214,14 @@ class LiveCodeEditor {
     var ctx = this.elementCanvas.getContext('2d');
     var name = cmd['function']
     var func = functions[name]
+
+    var scalex = this.elementCanvas.width/300;
+    var scaley = this.elementCanvas.height/300;
+
+    ctx.save();
+    ctx.scale(scalex, scaley);
     func(ctx, cmd)
+    ctx.restore();
   }
 
   clearCanvas() {
