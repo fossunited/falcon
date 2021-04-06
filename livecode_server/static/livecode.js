@@ -114,7 +114,7 @@ class LiveCodeEditor {
     this.elementReset = this.parent.querySelector(".reset");
     this.elementCanvas = this.parent.querySelector(".canvas");
     this.codemirror = null;
-
+    this.autosaveTimeoutId = null;
     this.setupActions()
   }
   reset() {
@@ -163,6 +163,18 @@ class LiveCodeEditor {
       options.extraKeys['Ctrl-Enter'] = () => this.run()
 
       this.codemirror = CodeMirror.fromTextArea(this.elementCode, options)
+
+      if (this.options.autosave) {
+        this.codemirror.on('change', (cm, change) => {
+          if (this.autosaveTimeoutId) {
+            clearTimeout(this.autosaveTimeoutId);
+          }
+          this.autosaveTimeoutId = setTimeout(() => {
+            let code = this.codemirror.doc.getValue();
+            this.options.autosave(this, code);
+          }, 3000)
+        })
+      }
     }
   }
 
