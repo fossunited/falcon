@@ -24,7 +24,7 @@ $ cd livecode
 Step 2: Install Python dependencies. You may want to do this in a virtualenv.
 
 ```
-$ pip install -r requirements.txt
+$ pip install -r requirements.txt -r dev-requirements.txt
 ```
 
 Step 3: Build the required docker images
@@ -42,6 +42,33 @@ INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 ```
 
 Step 5: visit the webapp at <http://127.0.0.1:8000/>.
+
+## Running Tests
+
+Tests are written using pytest.
+
+To run tests:
+
+```
+$ ./runtests.sh
+...
+collected 2 items
+
+tests/test_livecode.py ..
+```
+
+Or:
+
+```
+$ ./runtests.sh
+...
+collected 2 items
+
+tests/test_livecode.py::test_fileformats[sessions/test_hello.yml] PASSED
+tests/test_livecode.py::test_fileformats[sessions/test_ping.yml] PASSED
+```
+
+As you notice, the tests are written in YAML files. See [tests/sessions](/fossunited/livecode/tree/main/tests/sessions) to understand how to write tests.
 
 ## Low-level Interaction
 
