@@ -21,13 +21,13 @@ class LiveCodeTest:
     """LiveCodeTest runs all the steps specified in an YAML test file.
     """
     def __init__(self, path):
-        self.name = path
-        self.steps = yaml.safe_load(open(path))
+        self.path = path
 
     def runtest(self):
+        steps = yaml.safe_load(open(self.path))
         client = TestClient(app)
         with client.websocket_connect('/livecode') as ws:
-            for step in self.steps:
+            for step in steps:
                 if 'send' in step:
                     # send the message
                     data = step['send']
@@ -40,6 +40,14 @@ class LiveCodeTest:
                     data = ws.receive_json()
                     assert data == expected
 
+    def runexec(self):
+        data = yaml.safe_load(open(self.path))
+        print("runexec", data)
+        client = TestClient(app)
+        response = client.post('/exec', json=data['exec'])
+        assert response.status_code == 200
+        assert response.text == data['expected_output']
+
 def read_tests_files(path):
     tests = []
     root = Path(__file__).parent
@@ -51,7 +59,15 @@ def read_tests_files(path):
 testfiles = read_tests_files("sessions")
 
 @pytest.mark.parametrize('filename', testfiles)
-def test_fileformats(filename):
+def test_sessions(filename):
     path = Path(__file__).parent.joinpath(filename)
     t = LiveCodeTest(str(path))
     t.runtest()
+
+execfiles = read_tests_files("exec")
+
+@pytest.mark.parametrize('filename', execfiles)
+def test_exec(filename):
+    path = Path(__file__).parent.joinpath(filename)
+    t = LiveCodeTest(str(path))
+    t.runexec()

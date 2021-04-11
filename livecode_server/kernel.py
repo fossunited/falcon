@@ -17,11 +17,12 @@ KERNEL_SPEC = {
 }
 
 class Kernel:
-    def __init__(self, ws, runtime):
-        self.ws = ws
+    def __init__(self, runtime):
         self.runtime = runtime
 
     async def execute(self, code, env):
+        """Executes the code and yields the messages whenever something is printed by that code.
+        """
         with tempfile.TemporaryDirectory() as root:
             self.root = root
             self.save_file(root, "main.py", code)
@@ -39,10 +40,10 @@ class Kernel:
                         msg = dict(msgtype="draw", cmd=json.loads(cmd))
                     else:
                         msg = dict(msgtype="write", file="stdout", data=line)
-                    await self.ws.send_json(msg)
+                    yield msg
             finally:
                 status = await container.wait()
-                await self.ws.send_json({"msgtype": "exitstatus", "exitstatus": status['StatusCode']})
+                yield {"msgtype": "exitstatus", "exitstatus": status['StatusCode']}
                 await container.delete()
 
     def save_file(self, root, filename, contents):

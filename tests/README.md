@@ -2,6 +2,10 @@
 
 LiveCode tests are written as yaml files.
 
+## Session Tests
+
+Session Tests verify the exepetced output of the /livecode websocket API.
+
 Each yaml file corresponds to one test with multiple steps. Each step is either a `send` or a `recv` operation. There is test runner, that reads the yaml files and executes each step, verifying the data received from the app is matching what is specified in the test file.
 
 For example, let's look at the ping test (see [sessions/test_ping.yml](sessions/test_ping.yml)).
@@ -36,5 +40,20 @@ Similarly, to test helloworld, we would write something like this:
     file: stdout
     data: "hello, world!\n"
 ```
+
+## Exec Tests
+
+The Exec Tests verify the exepetced output of the /exec endpoint.
+
+They are written as follows:
+
+```
+exec:
+  runtime: python
+  code: print("hello, world!")
+expected_output: "hello, world!\n"
+```
+
+It containes `exec` with the message to send to engine and the exepected output from it.
 
 Do you want to try adding a new test?

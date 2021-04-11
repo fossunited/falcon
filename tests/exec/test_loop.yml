@@ -1,0 +1,11 @@
+exec:
+  runtime: python
+  code: |
+    for i in range(5):
+        print(i)
+expected_output: |
+  0
+  1
+  2
+  3
+  4

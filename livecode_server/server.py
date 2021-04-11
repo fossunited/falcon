@@ -2,7 +2,7 @@
 """
 from starlette.applications import Starlette
 from starlette.endpoints import WebSocketEndpoint
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, StreamingResponse
 from starlette.routing import Route, WebSocketRoute, Mount
 from starlette.templating import Jinja2Templates
 from starlette.staticfiles import StaticFiles
@@ -50,8 +50,9 @@ class LiveCode(WebSocketEndpoint):
         code = msg['code']
         env = msg.get('env') or {}
 
-        k = Kernel(ws, runtime)
-        await k.execute(code, env)
+        k = Kernel(runtime)
+        async for kmsg in k.execute(code, env):
+            await ws.send_json(kmsg)
         await ws.close()
 
     async def on_unknown_message(self, ws, msg):
@@ -62,10 +63,26 @@ class LiveCode(WebSocketEndpoint):
             "msg": msg
         })
 
+async def livecode_exec(request):
+    """Simple API endpoint to execute code and get all the output in the response.
+    """
+    data = await request.json()
+    # TODO: validate data
+    runtime = data['runtime']
+    code = data['code']
+    env = data.get("env" or {})
+    k = Kernel(runtime)
 
+    async def process():
+        async for msg in k.execute(code, env):
+            if msg['msgtype'] == 'write':
+                yield msg['data']
+
+    return StreamingResponse(process(), media_type='text/plain')
 
 app = Starlette(routes=[
     Route('/', home),
+    Route('/exec', livecode_exec, methods=['POST']),
     WebSocketRoute("/livecode", LiveCode),
     Mount('/static', app=StaticFiles(directory=static_dir), name="static"),
 ])

@@ -1,0 +1,4 @@
+exec:
+  runtime: python
+  code: print("hello, world!")
+expected_output: "hello, world!\n"
