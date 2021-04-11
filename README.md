@@ -68,7 +68,7 @@ tests/test_livecode.py::test_fileformats[sessions/test_hello.yml] PASSED
 tests/test_livecode.py::test_fileformats[sessions/test_ping.yml] PASSED
 ```
 
-As you notice, the tests are written in YAML files. See [tests/sessions](/fossunited/livecode/tree/main/tests/sessions) to understand how to write tests.
+As you notice, the tests are written in YAML files. See [tests/](tests/) to understand how to write tests.
 
 ## Low-level Interaction
 
@@ -214,6 +214,7 @@ For example, a program can send a message to draw on a canvas.
 ```
 {"msgtype": "draw", "shape": "circle", "args": [100, 100, 50]}
 ```
+
 
 ## LICENSE
 
