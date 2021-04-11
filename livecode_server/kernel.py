@@ -32,7 +32,7 @@ class Kernel:
             # TODO: read stdout and stderr seperately
             try:
                 logs = container.log(stdout=True, stderr=True, follow=True)
-                await self.ws.send_json({"msgtype": "debug", "message": "started container\n"})
+                #await self.ws.send_json({"msgtype": "debug", "message": "started container\n"})
                 async for line in logs:
                     if line.startswith("--DRAW--"):
                         cmd = line[len("--DRAW--"):].strip()

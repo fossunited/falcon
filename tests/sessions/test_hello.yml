@@ -1,0 +1,11 @@
+- recv:
+    msgtype: welcome
+    message: welcome to livecode
+- send:
+    msgtype: exec
+    runtime: python
+    code: print("hello, world!")
+- recv:
+    msgtype: write
+    file: stdout
+    data: "hello, world!\n"

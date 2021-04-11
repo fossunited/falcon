@@ -1,0 +1,7 @@
+- recv:
+    msgtype: welcome
+    message: welcome to livecode
+- send:
+    msgtype: ping
+- recv:
+    msgtype: pong
