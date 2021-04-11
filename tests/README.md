@@ -4,7 +4,7 @@ LiveCode tests are written as yaml files.
 
 Each yaml file corresponds to one test with multiple steps. Each step is either a `send` or a `recv` operation. There is test runner, that reads the yaml files and executes each step, verifying the data received from the app is matching what is specified in the test file.
 
-For example, let's look at the ping test (see <sessions/test_ping.yml>).
+For example, let's look at the ping test (see [sessions/test_ping.yml](sessions/test_ping.yml)).
 
 ```
 - recv:
