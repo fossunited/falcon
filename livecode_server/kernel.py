@@ -32,7 +32,11 @@ class Kernel:
                 self.save_file(root, f['filename'], f['contents'])
 
             kspec = KERNEL_SPEC[self.runtime]
-            container = await self.start_container(kspec['image'], kspec['command'], root)
+            container = await self.start_container(
+                image=kspec['image'],
+                command=kspec['command'],
+                root=root,
+                env=msg.env)
 
             # TODO: read stdout and stderr seperately
             try:
@@ -53,13 +57,14 @@ class Kernel:
     def save_file(self, root, filename, contents):
         Path(root, filename).write_text(contents)
 
-    async def start_container(self, image, command, root):
+    async def start_container(self, image, command, root, env):
         docker = aiodocker.Docker()
         print('== starting a container ==')
+        env_entries = [f'{k}={v}' for k, v in env.items()]
         config = {
             'Cmd': command,
             'Image': image,
-            'Env': ["PYTHONUNBUFFERED=1"],
+            'Env': ["PYTHONUNBUFFERED=1"] + env_entries,
             'HostConfig': {
                 'Binds': [
                     root + ":/app"
