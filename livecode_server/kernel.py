@@ -9,11 +9,13 @@ from .msgtypes import ExecMessage
 KERNEL_SPEC = {
     "python": {
         "image": "python:3.9",
-        "command": ["python", "main.py"]
+        "command": ["python", "main.py"],
+        "code_filename": "main.py"
     },
     "python-canvas": {
         "image": "livecode-python-canvas",
-        "command": ["python", "/opt/startup.py"]
+        "command": ["python", "/opt/startup.py"],
+        "code_filename": "main.py"
     }
 }
 
@@ -24,14 +26,15 @@ class Kernel:
     async def execute(self, msg: ExecMessage):
         """Executes the code and yields the messages whenever something is printed by that code.
         """
+        kspec = KERNEL_SPEC[self.runtime]
+        code_filename = msg.code_filename or kspec['code_filename']
         with tempfile.TemporaryDirectory() as root:
             self.root = root
-            self.save_file(root, "main.py", msg.code)
+            self.save_file(root, code_filename, msg.code)
 
             for f in msg.files:
                 self.save_file(root, f['filename'], f['contents'])
 
-            kspec = KERNEL_SPEC[self.runtime]
             container = await self.start_container(
                 image=kspec['image'],
                 command=msg.cmd or kspec['command'],
