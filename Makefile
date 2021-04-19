@@ -1,3 +1,4 @@
+LIVECODE_PORT?=8000
 
 default: run
 
@@ -6,4 +7,4 @@ setup:
 	cd runtimes/python-canvas && docker build -t livecode-python-canvas .
 
 run:
-	uvicorn livecode_server.server:app
+	uvicorn livecode_server.server:app --port ${LIVECODE_PORT}
