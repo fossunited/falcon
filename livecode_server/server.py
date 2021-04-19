@@ -15,6 +15,13 @@ templates = Jinja2Templates(directory=templates_dir)
 async def home(request):
     return templates.TemplateResponse('index.html', {'request': request})
 
+class ExecMessage:
+    def __init__(self, data):
+        self.runtime = data['runtime']
+        self.code = data['code']
+        self.files = data.get('files') or []
+        self.env = data.get('env') or {}
+
 class LiveCode(WebSocketEndpoint):
     """The websocket endpoint for livecode.
     """
@@ -34,7 +41,7 @@ class LiveCode(WebSocketEndpoint):
         elif msgtype == "quit":
             await self.on_quit(ws, msg)
         elif msgtype == "exec":
-            await self.on_exec(ws, msg)
+            await self.on_exec(ws, ExecMessage(msg))
         else:
             await self.on_unknown_message(ws, msg)
 
@@ -45,13 +52,9 @@ class LiveCode(WebSocketEndpoint):
         await ws.send_json({"msgtype": "goodbye"})
         await ws.close()
 
-    async def on_exec(self, ws, msg):
-        runtime = msg['runtime']
-        code = msg['code']
-        env = msg.get('env') or {}
-
-        k = Kernel(runtime)
-        async for kmsg in k.execute(code, env):
+    async def on_exec(self, ws, msg: ExecMessage):
+        k = Kernel(msg.runtime)
+        async for kmsg in k.execute(msg.code, msg.env, msg.files):
             await ws.send_json(kmsg)
         await ws.close()
 
@@ -67,14 +70,11 @@ async def livecode_exec(request):
     """Simple API endpoint to execute code and get all the output in the response.
     """
     data = await request.json()
-    # TODO: validate data
-    runtime = data['runtime']
-    code = data['code']
-    env = data.get("env" or {})
-    k = Kernel(runtime)
+    exec_msg = ExecMessage(data)
+    k = Kernel(exec_msg.runtime)
 
     async def process():
-        async for msg in k.execute(code, env):
+        async for msg in k.execute(exec_msg.code, exec_msg.env, exec_msg.files):
             if msg['msgtype'] == 'write':
                 yield msg['data']
 

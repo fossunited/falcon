@@ -1,0 +1,11 @@
+exec:
+  runtime: python
+  code: |
+    import sq
+    print(sq.square(4))
+  files:
+    - filename: sq.py
+      contents: |
+        def square(x):
+            return x*x
+expected_output: "16\n"

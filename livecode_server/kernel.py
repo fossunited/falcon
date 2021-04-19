@@ -20,12 +20,15 @@ class Kernel:
     def __init__(self, runtime):
         self.runtime = runtime
 
-    async def execute(self, code, env):
+    async def execute(self, code, env, files):
         """Executes the code and yields the messages whenever something is printed by that code.
         """
         with tempfile.TemporaryDirectory() as root:
             self.root = root
             self.save_file(root, "main.py", code)
+
+            for f in files:
+                self.save_file(root, f['filename'], f['contents'])
 
             kspec = KERNEL_SPEC[self.runtime]
             container = await self.start_container(kspec['image'], kspec['command'], root)
