@@ -9,18 +9,12 @@ from starlette.staticfiles import StaticFiles
 
 from .kernel import Kernel
 from .utils import templates_dir, static_dir
+from .msgtypes import ExecMessage
 
 templates = Jinja2Templates(directory=templates_dir)
 
 async def home(request):
     return templates.TemplateResponse('index.html', {'request': request})
-
-class ExecMessage:
-    def __init__(self, data):
-        self.runtime = data['runtime']
-        self.code = data['code']
-        self.files = data.get('files') or []
-        self.env = data.get('env') or {}
 
 class LiveCode(WebSocketEndpoint):
     """The websocket endpoint for livecode.
@@ -54,7 +48,7 @@ class LiveCode(WebSocketEndpoint):
 
     async def on_exec(self, ws, msg: ExecMessage):
         k = Kernel(msg.runtime)
-        async for kmsg in k.execute(msg.code, msg.env, msg.files):
+        async for kmsg in k.execute(msg):
             await ws.send_json(kmsg)
         await ws.close()
 
@@ -74,7 +68,7 @@ async def livecode_exec(request):
     k = Kernel(exec_msg.runtime)
 
     async def process():
-        async for msg in k.execute(exec_msg.code, exec_msg.env, exec_msg.files):
+        async for msg in k.execute(exec_msg):
             if msg['msgtype'] == 'write':
                 yield msg['data']
 

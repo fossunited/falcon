@@ -4,6 +4,7 @@ import aiodocker
 from pathlib import Path
 import tempfile
 import json
+from .msgtypes import ExecMessage
 
 KERNEL_SPEC = {
     "python": {
@@ -20,14 +21,14 @@ class Kernel:
     def __init__(self, runtime):
         self.runtime = runtime
 
-    async def execute(self, code, env, files):
+    async def execute(self, msg: ExecMessage):
         """Executes the code and yields the messages whenever something is printed by that code.
         """
         with tempfile.TemporaryDirectory() as root:
             self.root = root
-            self.save_file(root, "main.py", code)
+            self.save_file(root, "main.py", msg.code)
 
-            for f in files:
+            for f in msg.files:
                 self.save_file(root, f['filename'], f['contents'])
 
             kspec = KERNEL_SPEC[self.runtime]
