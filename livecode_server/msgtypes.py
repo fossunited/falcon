@@ -10,5 +10,5 @@ class ExecMessage:
         self.code_filename = data.get('code_filename')
         self.files = data.get('files') or []
         self.env = data.get('env') or {}
-        self.cmd = data.get('cmd')
+        self.command = data.get('command')
 

@@ -37,7 +37,7 @@ class Kernel:
 
             container = await self.start_container(
                 image=kspec['image'],
-                command=msg.cmd or kspec['command'],
+                command=msg.command or kspec['command'],
                 root=root,
                 env=msg.env)
 

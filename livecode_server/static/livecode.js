@@ -27,7 +27,7 @@ class LiveCodeSession {
       "code": this.code,
       "files": this.files,
       "env": this.env,
-      "cmd": this.command
+      "command": this.command
     })
   }
 
