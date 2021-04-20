@@ -15,10 +15,20 @@ class LiveCodeSession {
     this.base_url = new URL(options.base_url);
     this.runtime = options.runtime;
     this.code = options.code;
+    this.files = options.files || [];
+    this.env = options.env || {};
+    this.command = options.command || null;
     this.onMessage = options.onMessage || null;
 
     this.ws = this.createWebSocket();
-    this.send({"msgtype": "exec", "runtime": this.runtime, "code": this.code})
+    this.send({
+      "msgtype": "exec",
+      "runtime": this.runtime,
+      "code": this.code,
+      "files": this.files,
+      "env": this.env,
+      "cmd": this.command
+    })
   }
 
   createWebSocket() {
@@ -105,6 +115,10 @@ class LiveCodeEditor {
     this.base_url = options.base_url;
     this.runtime = options.runtime;
 
+    this.files = options.files || [];
+    this.env = options.env || {};
+    this.command = options.command || null;
+
     this.session = null;
 
     this.elementCode = this.parent.querySelector(".code");
@@ -132,6 +146,9 @@ class LiveCodeEditor {
       base_url: this.base_url,
       runtime: this.runtime,
       code: this.getCode(),
+      files: this.files,
+      env: this.env,
+      command: this.command,
       onMessage: (msg) => this.onMessage(msg)
     });
   }
@@ -194,6 +211,12 @@ class LiveCodeEditor {
     }
     else if (msg.msgtype == 'draw') {
       this.drawOnCanvas(msg.cmd)
+    }
+    else {
+      if (this.options.onMessage && this.options.onMessage[msg.msgtype]) {
+        var func = this.options.onMessage[msg.msgtype];
+        func(this, msg)
+      }
     }
   }
 
