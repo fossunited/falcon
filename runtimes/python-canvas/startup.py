@@ -7,9 +7,10 @@ import os.path
 import json
 
 def _draw(function, **kwargs):
-    # HACK: currently we are using prefix --DRAW-- to indicate
-    # that this is command to draw to the canvas, not a print statement.
-    print("--DRAW--", json.dumps(dict(function=function, **kwargs)))
+    # HACK: currently we are using prefix --MSG-- to indicate
+    # that this is a custom message
+    msg = dict(msgtype="draw", cmd=dict(function=function, **kwargs))
+    print("--MSG--", json.dumps(msg))
 
 def circle(x, y, d):
     """Draws a circle of diameter d with center (x, y).

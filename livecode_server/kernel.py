@@ -46,9 +46,13 @@ class Kernel:
                 logs = container.log(stdout=True, stderr=True, follow=True)
                 #await self.ws.send_json({"msgtype": "debug", "message": "started container\n"})
                 async for line in logs:
-                    if line.startswith("--DRAW--"):
-                        cmd = line[len("--DRAW--"):].strip()
-                        msg = dict(msgtype="draw", cmd=json.loads(cmd))
+                    if line.startswith("--MSG--"):
+                        json_message = line[len("--MSG--"):].strip()
+                        msg = json.loads(json_message)
+                        # ignore bad cases
+                        if "msgtype" not in msg:
+                            # TODO: print a warning message
+                            continue
                     else:
                         msg = dict(msgtype="write", file="stdout", data=line)
                     yield msg
