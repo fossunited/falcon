@@ -18,6 +18,9 @@
     <li class="nav-item" role="presentation">
       <a class="nav-link" id="canvas-tab" data-toggle="tab" href="#canvas-editor" role="tab" aria-controls="canvas" aria-selected="false">Python+Canvas</a>
     </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link" id="music-tab" data-toggle="tab" href="#music-editor" role="tab" aria-controls="music" aria-selected="false">Python+Music</a>
+    </li>
   </ul>
   <div class="tab-content" id="myTabContent">
     <div class="tab-pane fade show active" id="python-editor" role="tabpanel" aria-labelledby="python-tab"
@@ -89,6 +92,41 @@ draw_grid(random_concentric_circles)            </textarea>
           </div>
         </div>
       </div>
+
+      <div class="tab-pane fade show" id="music-editor" role="tabpanel" aria-labelledby="music-tab"
+      data-runtime="python">
+      <div class="x-row">
+        <div class="x-col">
+          <div class="section editor">
+            <div class="heading">
+              <button class="run" style="float: right;">Run</button>
+              <h2>Editor</h2>
+            </div>
+            <textarea class="code" style="width: 100%;" rows="18">
+"""Python script to play music.
+
+Warning: Experimental
+
+API:
+    play: plays a note
+    sleep: sleeps for specified time
+"""
+notes = ["C3", "D3", "E3", "F3", "G3", "A3", "B3"]
+
+for note in notes:
+    play(note)
+    sleep(0.5)
+              </textarea>
+          </div>
+        </div>
+        <div class="x-col">
+          <div class="section preview">
+            <div class="heading"><h2>Output</h2></div>
+            <pre class="output m-1"></pre>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -123,6 +161,10 @@ div.heading h2 {
 textarea {
   padding: 10px;
 }
+.CodeMirror {
+  height: 450px;
+}
+
 /* .CodeMirror {
     border: 1px solid #eee;
     height: auto;
@@ -149,6 +191,8 @@ textarea {
 <script src="/static/codemirror/addon/edit/matchbrackets.js"></script>
 <script src="/static/codemirror/addon/comment/comment.js"></script>
 
+<script src="https://unpkg.com/tone@14.7.77/build/Tone.js"></script>
+
 {% endblock %}
 
 {% block extrascripts %}
@@ -167,6 +211,57 @@ $(function() {
     runtime: "python-canvas",
     codemirror: true
   })
+
+  const synth = new Tone.Synth().toDestination();
+const MUSIC_START_PY=`
+import sonic
+
+# Execute the code in main.py with all the functions
+# defined in sonic.py predefined
+code = open("main.py").read()
+env = dict(sonic.__dict__)
+exec(code, env)
+`;
+
+const MUSIC_SONIC_PY=`
+import json
+from time import sleep
+
+def sendmsg(msgtype, **cmd):
+  """Sends a message to the frontend.
+  """
+  msg = dict(msgtype=msgtype, cmd=cmd)
+  print("--MSG--", json.dumps(msg))
+
+def play(note):
+  sendmsg("play", function="play", note=note)
+`;
+
+var musicEditor = new LiveCodeEditor(document.querySelector("#music-editor"), {
+  base_url: document.location.protocol + "//" + document.location.host,
+  runtime: "python",
+  files: [
+    {filename: "start.py", contents: MUSIC_START_PY},
+    {filename: "sonic.py", contents: MUSIC_SONIC_PY},
+  ],
+  command: ["python", "start.py"],
+  codemirror: true,
+  onMessage: {
+    play: function(editor, msg) {
+      synth.triggerAttackRelease(msg.cmd.note, "8n")
+    }
+  }
+});
+
+// Bootstrap tabs with CodeMirror is triky
+// Work-around to fix make it work
+// source: https://stackoverflow.com/questions/26487399/bootstrap-tabs-with-codemirror
+$('.nav-tabs a').on('shown.bs.tab', function() {
+    pythonEditor.codemirror.refresh();
+    canvasEditor.codemirror.refresh();
+    musicEditor.codemirror.refresh();
+});
+
 })
 </script>
 {% endblock %}
