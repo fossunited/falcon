@@ -70,6 +70,121 @@ tests/test_livecode.py::test_fileformats[sessions/test_ping.yml] PASSED
 
 As you notice, the tests are written in YAML files. See [tests/](tests/) to understand how to write tests.
 
+## The Client Library
+
+The livecode also comes with a `livecode.js` library. It is available at path `/static/livecode.js` on the livecode server.
+
+### `LiveCodeSession`
+
+Creates a session with the live code server.
+
+```
+var session = LiveCodeSession({
+    base_url: "https://livecode.example.com",
+    runtime: python,
+    code: "print('hello, world!')",
+    onMessage: function(msg) {
+        console.log(msg);
+    }
+})
+```
+
+The `LiveCodeSession` takes options as an object. The following fields are supported:
+
+**`base_url`**: _Required_
+
+The base URL of the livecode server.
+
+**`runtime`**:
+
+The runtime to use. Currently only `python` runtime is supported and that is the default value.
+
+**`code`**: _Required_
+
+The code to execute.
+
+By default, this code is saved as `main.py` and that is executed.
+
+**`code_filename`**:
+
+Filename to use to save the code. The default value depends on the runtime. For `python` runtime, the default value is `main.py`.
+
+**`files`**:
+
+List of files to to save in the working directory before executing the code. Each file is specified as an object with `filename` and `contents` fields.
+
+```
+[
+    {filename: "sq.py", contents: "def square(x): return x*x"}
+]
+```
+
+**`command`**:
+
+Command to execute, specified as a list.
+
+```
+["python", "start.py"]
+```
+
+Typically used along with `files` to use a different startup script.
+
+**`env`**:
+
+Environment variables to set. Specified as an object.
+
+**`onMessage`**:
+
+Function to call when a message is received. The function gets the message as argument.
+
+### `LiveCodeEditor`
+
+The `LiveCodeEditor` provides a high-level editor interface taking care of session creation when run button is clicked and displaying output.
+
+```
+<div class="code-editor" id="editor-1">
+    <div>
+        <textarea class="code">print("hello, world!")</textarea>
+    </div>
+    <div>
+        <button class="run">Run</button>
+    </div>
+    <pre class="output">
+    </pre>
+</div>
+
+<script type="text/javascript>
+var e = document.getElementById("editor-1")
+var editor = LiveCodeEditor(e, {
+    base_url: "https://livecode.example.com",
+    runtime: python,
+    code: "print('hello, world!')",
+    codemirror: true
+})
+</script>
+```
+
+It looks for elements with the following class names under the specified element.
+
+**`code`**
+
+The textarea with the code. This code is executed when the run button/link is clicked.
+
+**`run`**
+
+The link or button to attach the run action.
+
+**`output`**
+
+The element to write the output.
+
+
+The `LiveCodeEditor` supports all options that `LiveCodeSession` supports and the following:
+
+**`codemirror`**
+
+Enables codemirror when this is set to `true`. The codemirror js and css assets must be included in the document for this to work.
+
 ## Low-level Interaction
 
 Install `wscat`:
