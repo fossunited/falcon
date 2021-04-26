@@ -137,7 +137,6 @@ class LiveCodeEditor {
       this.session = null;
     }
     this.clearOutput();
-    this.clearCanvas();
   }
   run() {
     this.triggerEvent("beforeRun");
@@ -209,64 +208,12 @@ class LiveCodeEditor {
     if (msg.msgtype == 'write') {
       this.writeOutput(msg.data);
     }
-    else if (msg.msgtype == 'draw') {
-      this.drawOnCanvas(msg.cmd)
-    }
     else {
       if (this.options.onMessage && this.options.onMessage[msg.msgtype]) {
         var func = this.options.onMessage[msg.msgtype];
         func(this, msg)
       }
     }
-  }
-
-  drawOnCanvas(cmd) {
-    var functions = {
-      circle: function(ctx, args) {
-        ctx.beginPath();
-        ctx.arc(args.x, args.y, args.d/2, 0, 2*Math.PI);
-        ctx.stroke();
-      },
-      line: function(ctx, args) {
-        ctx.beginPath();
-        ctx.moveTo(args.x1, args.y1);
-        ctx.lineTo(args.x2, args.y2);
-        ctx.stroke();
-      },
-      rect: function(ctx, args) {
-        ctx.beginPath();
-        ctx.rect(args.x, args.y, args.w, args.h);
-        ctx.stroke();
-      },
-      clear: function(ctx, args) {
-        clearCanvas();
-      }
-    }
-    if (!this.elementCanvas) {
-      return
-    }
-
-    var ctx = this.elementCanvas.getContext('2d');
-    var name = cmd['function']
-    var func = functions[name]
-
-    var scalex = this.elementCanvas.width/300;
-    var scaley = this.elementCanvas.height/300;
-
-    ctx.save();
-    ctx.scale(scalex, scaley);
-    func(ctx, cmd)
-    ctx.restore();
-  }
-
-  clearCanvas() {
-    if (!this.elementCanvas) {
-      return
-    }
-    var ctx = this.elementCanvas.getContext('2d');
-    var width = this.elementCanvas.width;
-    var height = this.elementCanvas.height;
-    ctx.clearRect(0, 0, width, height);
   }
 
   clearOutput() {

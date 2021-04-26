@@ -197,61 +197,13 @@ textarea {
 
 {% block extrascripts %}
 <script type="text/javascript" src="/static/livecode.js"></script>
+<script type="text/javascript" src="/static/livecode-demo.js"></script>
 
 <script type="text/javascript">
 $(function() {
-  var pythonEditor = new LiveCodeEditor(document.querySelector("#python-editor"), {
-    base_url: document.location.protocol + "//" + document.location.host,
-    runtime: "python",
-    codemirror: true
-  })
-
-  var canvasEditor = new LiveCodeEditor(document.querySelector("#canvas-editor"), {
-    base_url: document.location.protocol + "//" + document.location.host,
-    runtime: "python-canvas",
-    codemirror: true
-  })
-
-  const synth = new Tone.Synth().toDestination();
-const MUSIC_START_PY=`
-import sonic
-
-# Execute the code in main.py with all the functions
-# defined in sonic.py predefined
-code = open("main.py").read()
-env = dict(sonic.__dict__)
-exec(code, env)
-`;
-
-const MUSIC_SONIC_PY=`
-import json
-from time import sleep
-
-def sendmsg(msgtype, **cmd):
-  """Sends a message to the frontend.
-  """
-  msg = dict(msgtype=msgtype, cmd=cmd)
-  print("--MSG--", json.dumps(msg))
-
-def play(note):
-  sendmsg("play", function="play", note=note)
-`;
-
-var musicEditor = new LiveCodeEditor(document.querySelector("#music-editor"), {
-  base_url: document.location.protocol + "//" + document.location.host,
-  runtime: "python",
-  files: [
-    {filename: "start.py", contents: MUSIC_START_PY},
-    {filename: "sonic.py", contents: MUSIC_SONIC_PY},
-  ],
-  command: ["python", "start.py"],
-  codemirror: true,
-  onMessage: {
-    play: function(editor, msg) {
-      synth.triggerAttackRelease(msg.cmd.note, "8n")
-    }
-  }
-});
+  var pythonEditor = setupPythonDemo("#python-editor");
+  var canvasEditor = setupCanvasDemo("#canvas-editor");
+  var musicEditor = setupMusicDemo("#music-editor");
 
 // Bootstrap tabs with CodeMirror is triky
 // Work-around to fix make it work
