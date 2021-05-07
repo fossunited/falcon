@@ -71,7 +71,7 @@ class Kernel:
         config = {
             'Cmd': command,
             'Image': image,
-            'Env': ["PYTHONUNBUFFERED=1"] + env_entries,
+            'Env': ["PYTHONUNBUFFERED=1", "PYTHONDONTWRITEBYTECODE=1"] + env_entries,
             'HostConfig': {
                 'Binds': [
                     root + ":/app"
