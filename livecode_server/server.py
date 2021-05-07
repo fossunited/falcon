@@ -6,6 +6,7 @@ from starlette.responses import JSONResponse, StreamingResponse
 from starlette.routing import Route, WebSocketRoute, Mount
 from starlette.templating import Jinja2Templates
 from starlette.staticfiles import StaticFiles
+import json
 
 from .kernel import Kernel
 from .utils import templates_dir, static_dir
@@ -67,10 +68,17 @@ async def livecode_exec(request):
     exec_msg = ExecMessage(data)
     k = Kernel(exec_msg.runtime)
 
+    # When raw_output is set, the JSON is sent directly without filtering
+    raw = data.get("raw_output")
+
     async def process():
         async for msg in k.execute(exec_msg):
-            if msg['msgtype'] == 'write':
-                yield msg['data']
+            if raw:
+                print(msg)
+                yield json.dumps(msg) + "\n"
+            else:
+                if msg['msgtype'] == 'write':
+                    yield msg['data']
 
     return StreamingResponse(process(), media_type='text/plain')
 
