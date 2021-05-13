@@ -84,5 +84,3 @@ class Kernel:
         )
         await container.start()
         return container
-
-

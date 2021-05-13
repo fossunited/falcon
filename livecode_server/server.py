@@ -2,7 +2,7 @@
 """
 from starlette.applications import Starlette
 from starlette.endpoints import WebSocketEndpoint
-from starlette.responses import JSONResponse, StreamingResponse
+from starlette.responses import StreamingResponse
 from starlette.routing import Route, WebSocketRoute, Mount
 from starlette.templating import Jinja2Templates
 from starlette.staticfiles import StaticFiles

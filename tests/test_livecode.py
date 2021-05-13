@@ -6,7 +6,6 @@ See tests/sessions/*.yml
 from pathlib import Path
 import pytest
 import yaml
-import os
 import asyncio
 from starlette.testclient import TestClient
 from livecode_server.server import app
@@ -49,7 +48,6 @@ class LiveCodeTest:
         assert response.text == data['expected_output']
 
 def read_tests_files(path):
-    tests = []
     root = Path(__file__).parent
     p = root.joinpath(path)
     files = p.rglob('*.yml')
