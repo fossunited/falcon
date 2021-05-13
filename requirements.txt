@@ -3,3 +3,4 @@ aiofiles
 uvicorn[standard]
 Jinja2
 aiodocker
+flake8
