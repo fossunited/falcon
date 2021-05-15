@@ -1,5 +1,5 @@
 exec:
   runtime: python
   code: ""
-  cmd: ["/bin/echo", "hello", "world"]
+  command: ["/bin/echo", "hello", "world"]
 expected_output: "hello world\n"

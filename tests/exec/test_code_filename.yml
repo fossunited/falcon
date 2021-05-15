@@ -4,5 +4,5 @@ exec:
     import os
     print(os.listdir("."))
   code_filename: app.py
-  cmd: ["python", "app.py"]
+  command: ["python", "app.py"]
 expected_output: "['app.py']\n"
