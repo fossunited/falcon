@@ -154,7 +154,6 @@ class LiveCodeEditor {
   triggerEvent(name) {
       var events = this.options.events;
       if (events && events[name]) {
-        console.log(events[name]);
 	events[name](this);
       }
   }
@@ -223,8 +222,11 @@ class LiveCodeEditor {
   }
 
   writeOutput(data) {
+    // escape HTML
+    var html = new Option(data).innerHTML;
+
     if (this.elementOutput) {
-      this.elementOutput.innerHTML += data;
+      this.elementOutput.innerHTML += html;
     }
   }
 }
