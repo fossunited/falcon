@@ -96,6 +96,7 @@ class Kernel:
     async def start_container(self, image, command, root, env):
         docker = aiodocker.Docker()
         print('== starting a container ==')
+        command = ["timeout", "10"] + command
         env_entries = [f'{k}={v}' for k, v in env.items()]
         config = {
             'Cmd': command,
