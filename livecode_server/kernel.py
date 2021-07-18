@@ -104,7 +104,10 @@ class Kernel:
             'HostConfig': {
                 'Binds': [
                     root + ":/app"
-                ]
+                ],
+                "Memory": 100*1024*1024,
+                "CPUQuota": 10000,
+                "CPUPeriod": 100000,
             },
             'WorkingDir': '/app',
         }
