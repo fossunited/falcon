@@ -1,12 +1,12 @@
-# [<>] LiveCode - Run code directly from your browser
+# [<>] Falcon - Run code directly from your browser
 
-LiveCode is a service that execute code in any programming language in a sandboxed environment.
+Falcon is a service that execute code in any programming language in a sandboxed environment.
 
 It uses websockets for bidrectional communication and can support interactive applications with support for keyboard and mouse.
 
 ## Requirements
 
-LiveCode runs on any unix computer and the following software are required.
+Falcon runs on any unix computer and the following software are required.
 
 * Python 3
 * Docker
@@ -16,7 +16,7 @@ LiveCode runs on any unix computer and the following software are required.
 Step 1: Clone the repository
 
 ```
-$ git clone https://github.com/fossunited/livecode
+$ git clone https://github.com/fossunited/falcon
 
 $ cd livecode
 ```
@@ -33,7 +33,7 @@ Step 3: Build the required docker images
 $ make setup
 ```
 
-Step 4: Start the live code server
+Step 4: Start the falcon server
 
 ```
 $ uvicorn livecode_server.server:app
@@ -72,7 +72,7 @@ As you notice, the tests are written in YAML files. See [tests/](tests/) to unde
 
 ## The Client Library
 
-The livecode also comes with a `livecode.js` library. It is available at path `/static/livecode.js` on the livecode server.
+The falcon also comes with a `livecode.js` library. It is available at path `/static/livecode.js` on the livecode server.
 
 ### `LiveCodeSession`
 
@@ -333,5 +333,5 @@ For example, a program can send a message to draw on a canvas.
 
 ## LICENSE
 
-This repository has been released under the [MIT License](https://github.com/fossunited/livecode/blob/main/LICENSE).
+This repository has been released under the [MIT License](https://github.com/fossunited/falcon/blob/main/LICENSE).
 
