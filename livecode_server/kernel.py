@@ -16,7 +16,12 @@ KERNEL_SPEC = {
         "image": "livecode-python-canvas",
         "command": ["python", "/opt/startup.py"],
         "code_filename": "main.py"
-    }
+    },
+    "rust": {
+        "image": "rust:1.55-alpine",
+        "command": ["sh", "-c", "rustc main.rs && ./main"],
+        "code_filename": "main.rs"
+    },
 }
 
 class Kernel:
