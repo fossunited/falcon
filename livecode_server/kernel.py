@@ -112,7 +112,7 @@ class Kernel:
                     root + ":/app"
                 ],
                 "Memory": 100*1024*1024,
-                "CPUQuota": 10000,
+                "CPUQuota": 50000,
                 "CPUPeriod": 100000,
             },
             'WorkingDir': '/app',
