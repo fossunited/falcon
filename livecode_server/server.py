@@ -2,7 +2,7 @@
 """
 from starlette.applications import Starlette
 from starlette.endpoints import WebSocketEndpoint
-from starlette.responses import StreamingResponse
+from starlette.responses import StreamingResponse, PlainTextResponse
 from starlette.routing import Route, WebSocketRoute, Mount
 from starlette.templating import Jinja2Templates
 from starlette.staticfiles import StaticFiles
@@ -61,6 +61,26 @@ class LiveCode(WebSocketEndpoint):
             "msg": msg
         })
 
+async def runtime_exec(request):
+    runtime = request.path_params['runtime']
+    code_bytes = await request.body()
+    code = code_bytes.decode('utf-8')
+    exec_msg = ExecMessage({
+        "runtime": runtime,
+        "code": code
+    })
+    k = Kernel(runtime)
+
+    async def process():
+        output = []
+        async for msg in k.execute(exec_msg):
+            if msg['msgtype'] == 'write':
+                output.append(msg['data'])
+        return "".join(output)
+
+    output = await process()
+    return PlainTextResponse(output, media_type="text/plain")
+
 async def livecode_exec(request):
     """Simple API endpoint to execute code and get all the output in the response.
     """
@@ -85,6 +105,7 @@ async def livecode_exec(request):
 app = Starlette(routes=[
     Route('/', home),
     Route('/exec', livecode_exec, methods=['POST']),
+    Route('/runtimes/{runtime}', runtime_exec, methods=['POST']),
     WebSocketRoute("/livecode", LiveCode),
     Mount('/static', app=StaticFiles(directory=static_dir), name="static"),
 ])
