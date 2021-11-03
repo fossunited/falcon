@@ -22,6 +22,11 @@ KERNEL_SPEC = {
         "command": ["sh", "-c", "rustc main.rs && ./main"],
         "code_filename": "main.rs"
     },
+    "golang": {
+        "image": "golang:1.17",
+        "command": ["go", "run", "main.go"],
+        "code_filename": "main.go"
+    },
 }
 
 class Kernel:
