@@ -6,6 +6,8 @@ from starlette.responses import StreamingResponse, PlainTextResponse
 from starlette.routing import Route, WebSocketRoute, Mount
 from starlette.templating import Jinja2Templates
 from starlette.staticfiles import StaticFiles
+from starlette.middleware import Middleware
+from starlette.middleware.cors import CORSMiddleware
 import json
 
 from .kernel import Kernel
@@ -102,10 +104,15 @@ async def livecode_exec(request):
 
     return StreamingResponse(process(), media_type='text/plain')
 
-app = Starlette(routes=[
-    Route('/', home),
-    Route('/exec', livecode_exec, methods=['POST']),
-    Route('/runtimes/{runtime}', runtime_exec, methods=['POST']),
-    WebSocketRoute("/livecode", LiveCode),
-    Mount('/static', app=StaticFiles(directory=static_dir), name="static"),
-])
+middleware = [
+    Middleware(CORSMiddleware, allow_origins=['*'])
+]
+app = Starlette(
+    routes=[
+        Route('/', home),
+        Route('/exec', livecode_exec, methods=['POST']),
+        Route('/runtimes/{runtime}', runtime_exec, methods=['POST']),
+        WebSocketRoute("/livecode", LiveCode),
+        Mount('/static', app=StaticFiles(directory=static_dir), name="static"),
+    ],
+    middleware=middleware)
