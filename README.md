@@ -209,7 +209,7 @@ Connected (press CTRL+C to quit)
 
 ## The Live Code Protocol
 
-The client and server communite over websockets using simple JSON messages.
+The client and server communicate over websockets using simple JSON messages.
 
 The following types of messages are accepted by the server.
 
