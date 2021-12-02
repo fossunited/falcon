@@ -6,3 +6,4 @@ def get_module_relative_path(path):
 
 templates_dir = get_module_relative_path("templates")
 static_dir = get_module_relative_path("static")
+codemirror_dir = get_module_relative_path("../vendor/codemirror")

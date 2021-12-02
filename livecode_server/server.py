@@ -14,7 +14,7 @@ import time
 import shlex
 
 from .kernel import Kernel
-from .utils import templates_dir, static_dir
+from .utils import templates_dir, static_dir, codemirror_dir
 from .msgtypes import ExecMessage
 
 templates = Jinja2Templates(directory=templates_dir)
@@ -162,6 +162,7 @@ app = Starlette(
         Route('/exec', livecode_exec, methods=['POST']),
         Route('/runtimes/{runtime}', runtime_exec, methods=['POST']),
         WebSocketRoute("/livecode", LiveCode),
+        Mount('/static/codemirror', app=StaticFiles(directory=codemirror_dir), name="codemirror"),
         Mount('/static', app=StaticFiles(directory=static_dir), name="static"),
     ],
     middleware=middleware)

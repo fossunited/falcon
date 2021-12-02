@@ -108,7 +108,9 @@ function setupCanvasDemo(selector) {
       {filename: "start.py", contents: CANVAS_START_PY},
       {filename: "sketch.py", contents: CANVAS_SKETCH_PY},
     ],
-    command: ["python", "start.py"],
+    env: {
+      "FALCON_SOURCE_FILE": "start.py",
+    },
     onMessage: {
       draw: function(editor, msg) {
         const canvasElement = editor.parent.querySelector(".canvas");
@@ -153,7 +155,9 @@ function setupMusicDemo(selector) {
       {filename: "start.py", contents: MUSIC_START_PY},
       {filename: "sonic.py", contents: MUSIC_SONIC_PY},
     ],
-    command: ["python", "start.py"],
+    env: {
+      "FALCON_SOURCE_FILE": "start.py",
+    },
     codemirror: true,
     onMessage: {
       play: function(editor, msg) {
