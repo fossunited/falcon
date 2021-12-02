@@ -330,6 +330,31 @@ For example, a program can send a message to draw on a canvas.
 {"msgtype": "draw", "shape": "circle", "args": [100, 100, 50]}
 ```
 
+## New API
+
+Execute code:
+
+```
+POST /runtimes/python
+
+print("hello, world!")
+---
+HTTP/1.1 200 OK
+
+hello, world!
+```
+
+Run tests:
+
+```
+$ curl -Fmain.py=@main.py -F test_main.py=test_main.py -H 'X-FALCON-MODE: test' http://localhost:8010/runtimes/python
+```
+
+**Headers**
+
+* `X-FALCON-MODE` - `exec` or `test`
+* `X-FALCON-ARGS` - command-line arguments passed
+* `X-FALCON-ENV` - space separated env variables 'FOO=bar X=1'
 
 ## LICENSE
 

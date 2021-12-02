@@ -41,9 +41,30 @@ class LiveCodeTest:
 
     def runexec(self):
         data = yaml.safe_load(open(self.path))
-        print("runexec", data)
         client = TestClient(app)
         response = client.post('/exec', json=data['exec'])
+        assert response.status_code == 200
+        assert response.text == data['expected_output']
+
+    def runtime_exec(self):
+        data = yaml.safe_load(open(self.path))
+        client = TestClient(app)
+        path = '/runtimes/' + data['runtime']
+        headers = {}
+        args = {"headers": headers}
+        if 'code' in data:
+            args['data'] = data['code']
+            headers['content-type'] = "text/plain"
+        elif 'files' in data:
+            args['files'] = [(f['filename'], f['contents']) for f in data['files']]
+
+        if "env" in data:
+            headers['X-FALCON-ENV'] = " ".join(f"{k}={v}" for k, v in data['env'].items())
+
+        if "args" in data:
+            headers['X-FALCON-ARGS'] = " ".join(data['args'])
+
+        response = client.post(path, **args)
         assert response.status_code == 200
         assert response.text == data['expected_output']
 
@@ -69,3 +90,12 @@ def test_exec(filename):
     path = Path(__file__).parent.joinpath(filename)
     t = LiveCodeTest(str(path))
     t.runexec()
+
+
+runtime_files = read_tests_files("runtimes")
+
+@pytest.mark.parametrize('filename', runtime_files)
+def test_exec(filename):
+    path = Path(__file__).parent.joinpath(filename)
+    t = LiveCodeTest(str(path))
+    t.runtime_exec()

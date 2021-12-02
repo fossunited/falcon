@@ -8,24 +8,29 @@ from .msgtypes import ExecMessage
 
 KERNEL_SPEC = {
     "python": {
-        "image": "python:3.9",
-        "command": ["python", "main.py"],
+        "image": "fossunited/falcon-python:3.9",
+        "command": [],
+        "code_filename": "main.py"
+    },
+    "rust": {
+        "image": "fossunited/falcon-rust",
+        "command": [],
+        "code_filename": "main.rs"
+    },
+    "golang": {
+        "image": "fossunited/falcon-golang",
+        "command": [],
+        "code_filename": "main.go"
+    },
+    "joy": {
+        "image": "falcon-joy",
+        "command": ["python", "/opt/start.py"],
         "code_filename": "main.py"
     },
     "python-canvas": {
         "image": "livecode-python-canvas",
         "command": ["python", "/opt/startup.py"],
         "code_filename": "main.py"
-    },
-    "rust": {
-        "image": "rust:1.55-alpine",
-        "command": ["sh", "-c", "rustc main.rs && ./main"],
-        "code_filename": "main.rs"
-    },
-    "golang": {
-        "image": "golang:1.17",
-        "command": ["go", "run", "main.go"],
-        "code_filename": "main.go"
     },
 }
 
@@ -40,7 +45,8 @@ class Kernel:
         code_filename = msg.code_filename or kspec['code_filename']
         with tempfile.TemporaryDirectory() as root:
             self.root = root
-            self.save_file(root, code_filename, msg.code)
+            if msg.code:
+                self.save_file(root, code_filename, msg.code)
 
             for f in msg.files:
                 self.save_file(root, f['filename'], f['contents'])
@@ -106,7 +112,7 @@ class Kernel:
     async def start_container(self, image, command, root, env):
         docker = aiodocker.Docker()
         print('== starting a container ==')
-        command = ["timeout", "10"] + command
+        # command = ["timeout", "10"] + command
         env_entries = [f'{k}={v}' for k, v in env.items()]
         config = {
             'Cmd': command,

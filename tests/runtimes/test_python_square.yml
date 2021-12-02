@@ -1,0 +1,8 @@
+runtime: python
+code: >
+  def square(x):
+    return x*x
+
+  if __name__ == "__main__":
+    print(square(4))
+expected_output: "16\n"

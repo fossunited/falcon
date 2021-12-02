@@ -1,0 +1,7 @@
+runtime: python
+code: |
+  import os
+  print(os.getenv("NAME"))
+env:
+  NAME: "foobar"
+expected_output: "foobar\n"

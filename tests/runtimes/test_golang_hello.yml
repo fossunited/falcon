@@ -1,0 +1,10 @@
+runtime: golang
+code: >
+  package main
+
+  import "fmt"
+
+  func main() {
+    fmt.Println("hello, world!")
+  }
+expected_output: "hello, world!\n"
