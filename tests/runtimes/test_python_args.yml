@@ -1,0 +1,7 @@
+runtime: python
+code: |
+  import sys
+  print(sys.argv[1])
+args:
+  - "foobar"
+expected_output: "foobar\n"

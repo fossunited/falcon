@@ -1,0 +1,6 @@
+runtime: rust
+code: >
+  fn main() {
+    println!("hello, world!");
+  }
+expected_output: "hello, world!\n"

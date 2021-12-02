@@ -1,6 +1,7 @@
 """livecode server.
 """
 from starlette.applications import Starlette
+from starlette.datastructures import UploadFile
 from starlette.endpoints import WebSocketEndpoint
 from starlette.responses import StreamingResponse, PlainTextResponse
 from starlette.routing import Route, WebSocketRoute, Mount
@@ -9,6 +10,8 @@ from starlette.staticfiles import StaticFiles
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 import json
+import time
+import shlex
 
 from .kernel import Kernel
 from .utils import templates_dir, static_dir
@@ -63,25 +66,71 @@ class LiveCode(WebSocketEndpoint):
             "msg": msg
         })
 
-async def runtime_exec(request):
-    runtime = request.path_params['runtime']
-    code_bytes = await request.body()
-    code = code_bytes.decode('utf-8')
-    exec_msg = ExecMessage({
-        "runtime": runtime,
-        "code": code
-    })
-    k = Kernel(runtime)
 
+def _get_runtime_env(request):
+    if 'x-falcon-env' in request.headers:
+        value = request.headers['x-falcon-env']
+        env = dict(kv.split("=", 1) for kv in value.split())
+    else:
+        env = {}
+    if "x-falcon-mode" in request.headers:
+        env['FALCON_MODE'] = request.headers['x-falcon-mode']
+    return env
+
+def _get_runtime_args(request):
+    args = request.headers.get("X-falcon-args")
+    if args:
+        return shlex.split(args)
+    else:
+        return []
+
+async def runtime_exec(request):
+    t0 = time.time()
+    runtime = request.path_params['runtime']
+    env = _get_runtime_env(request)
+    args = _get_runtime_args(request)
+
+    if "multipart/form-data" in request.headers['content-type']:
+        form = await request.form()
+        exec_msg = ExecMessage({
+            "runtime": runtime,
+            "env": env,
+            "code": "",
+            "files": [
+                {"filename": name, "contents": (await f.read()).decode("utf-8")}
+                for name, f in form.items()
+                if isinstance(f, UploadFile)],
+            "command": args
+        })
+    else:
+        code_bytes = await request.body()
+        code = code_bytes.decode('utf-8')
+        exec_msg = ExecMessage({
+            "runtime": runtime,
+            "code": code,
+            "env": env,
+            "command": args
+        })
+
+    k = Kernel(runtime)
     async def process():
         output = []
+        exit_status = -1
         async for msg in k.execute(exec_msg):
             if msg['msgtype'] == 'write':
                 output.append(msg['data'])
-        return "".join(output)
+            elif msg['msgtype'] == 'exitstatus':
+                exit_status = msg['exitstatus']
+        return exit_status, "".join(output)
 
-    output = await process()
-    return PlainTextResponse(output, media_type="text/plain")
+    exit_status, output = await process()
+    t1 = time.time()
+    dt = t1-t0
+    headers = {
+        "X-Falcon-Exit-Status": str(exit_status),
+        "X-Falcon-Time-Taken": str(dt)
+    }
+    return PlainTextResponse(output, media_type="text/plain", headers=headers)
 
 async def livecode_exec(request):
     """Simple API endpoint to execute code and get all the output in the response.
