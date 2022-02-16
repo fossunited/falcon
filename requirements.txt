@@ -5,3 +5,4 @@ Jinja2
 aiodocker
 flake8
 requests
+python-multipart
