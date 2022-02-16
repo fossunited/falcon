@@ -16,6 +16,7 @@ import shlex
 from .kernel import Kernel
 from .utils import templates_dir, static_dir, codemirror_dir
 from .msgtypes import ExecMessage
+from . import config
 
 templates = Jinja2Templates(directory=templates_dir)
 
@@ -90,6 +91,9 @@ async def runtime_exec(request):
     env = _get_runtime_env(request)
     args = _get_runtime_args(request)
 
+    if not config.has_runtime(runtime):
+        return PlainTextResponse(status_code=404)
+
     if "multipart/form-data" in request.headers['content-type']:
         form = await request.form()
         exec_msg = ExecMessage({
@@ -154,7 +158,10 @@ async def livecode_exec(request):
     return StreamingResponse(process(), media_type='text/plain')
 
 middleware = [
-    Middleware(CORSMiddleware, allow_origins=['*'])
+    Middleware(CORSMiddleware,
+        allow_origins=['*'],
+        allow_methods=['GET', 'POST'],
+        allow_headers=['x-falcon-mode', 'x-falcon-env', 'x-falcon-args'])
 ]
 app = Starlette(
     routes=[

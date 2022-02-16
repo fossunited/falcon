@@ -1,3 +1,8 @@
+"""
+Driver for py.test tests.
+
+Run the py.test with junitxml, parses the output of junitxml and returns it as json.
+"""
 import sys
 import subprocess
 from xml.dom import minidom

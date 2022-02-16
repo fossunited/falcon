@@ -1,0 +1,11 @@
+# Sample config file for falcon
+#
+# copy this file as config.yml and set env var FALCON_CONFIG_FILE=config.yml
+#
+runtimes:
+  # You can add a new runtime by adding an entry with the runtime name as key and 
+  # the value containing these three keys.
+  mypy:
+    image: fossunited/falcon-mypy
+    code_filename: main.py
+    command: []
