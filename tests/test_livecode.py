@@ -95,7 +95,7 @@ def test_exec(filename):
 runtime_files = read_tests_files("runtimes")
 
 @pytest.mark.parametrize('filename', runtime_files)
-def test_exec(filename):
+def test_runtimes(filename):
     path = Path(__file__).parent.joinpath(filename)
     t = LiveCodeTest(str(path))
     t.runtime_exec()
