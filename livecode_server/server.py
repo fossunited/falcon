@@ -16,6 +16,7 @@ import shlex
 from .kernel import Kernel
 from .utils import templates_dir, static_dir, codemirror_dir
 from .msgtypes import ExecMessage
+from . import config
 
 templates = Jinja2Templates(directory=templates_dir)
 
@@ -89,6 +90,9 @@ async def runtime_exec(request):
     runtime = request.path_params['runtime']
     env = _get_runtime_env(request)
     args = _get_runtime_args(request)
+
+    if not config.has_runtime(runtime):
+        return PlainTextResponse(status_code=404)
 
     if "multipart/form-data" in request.headers['content-type']:
         form = await request.form()

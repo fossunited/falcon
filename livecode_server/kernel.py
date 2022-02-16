@@ -5,34 +5,7 @@ from pathlib import Path
 import tempfile
 import json
 from .msgtypes import ExecMessage
-
-KERNEL_SPEC = {
-    "python": {
-        "image": "fossunited/falcon-python:3.9",
-        "command": [],
-        "code_filename": "main.py"
-    },
-    "rust": {
-        "image": "fossunited/falcon-rust",
-        "command": [],
-        "code_filename": "main.rs"
-    },
-    "golang": {
-        "image": "fossunited/falcon-golang",
-        "command": [],
-        "code_filename": "main.go"
-    },
-    "joy": {
-        "image": "falcon-joy",
-        "command": ["python", "/opt/start.py"],
-        "code_filename": "main.py"
-    },
-    "python-canvas": {
-        "image": "livecode-python-canvas",
-        "command": ["python", "/opt/startup.py"],
-        "code_filename": "main.py"
-    },
-}
+from . import config
 
 class Kernel:
     def __init__(self, runtime):
@@ -41,7 +14,7 @@ class Kernel:
     async def execute(self, msg: ExecMessage):
         """Executes the code and yields the messages whenever something is printed by that code.
         """
-        kspec = KERNEL_SPEC[self.runtime]
+        kspec = config.get_runtime(self.runtime)
         code_filename = msg.code_filename or kspec['code_filename']
         with tempfile.TemporaryDirectory() as root:
             self.root = root
