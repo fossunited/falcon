@@ -158,7 +158,10 @@ async def livecode_exec(request):
     return StreamingResponse(process(), media_type='text/plain')
 
 middleware = [
-    Middleware(CORSMiddleware, allow_origins=['*'])
+    Middleware(CORSMiddleware,
+        allow_origins=['*'],
+        allow_methods=['GET', 'POST'],
+        allow_headers=['x-falcon-mode', 'x-falcon-env', 'x-falcon-args'])
 ]
 app = Starlette(
     routes=[
