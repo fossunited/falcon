@@ -1,4 +1,4 @@
-LIVECODE_PORT?=8000
+LIVECODE_PORT?=8010
 
 default: run
 
@@ -9,4 +9,4 @@ setup:
 	@[ -d .git ] && echo "flake8" > .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit; true
 
 run:
-	uvicorn livecode_server.server:app --port ${LIVECODE_PORT}
+	uvicorn livecode_server.server:app --host 0.0.0.0 --port ${LIVECODE_PORT}

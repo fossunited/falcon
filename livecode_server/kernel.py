@@ -98,8 +98,7 @@ class Kernel:
                 "Memory": 100*1024*1024,
                 "CPUQuota": 50000,
                 "CPUPeriod": 100000,
-            },
-            'WorkingDir': '/app',
+            }
         }
         container = await docker.containers.create(
             config=config
