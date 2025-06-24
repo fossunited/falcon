@@ -19,7 +19,7 @@ DEFAULT_CONFIG = {
             "image": "frappe/falcon-javascript:latest",
             "command": [],
             "code_filename": "main.js"
-        }
+        },
         "rust": {
             "image": "fossunited/falcon-rust",
             "command": [],
