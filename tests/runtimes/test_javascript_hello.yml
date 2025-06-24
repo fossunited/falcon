@@ -1,0 +1,3 @@
+runtime: javascript
+code: console.log("hello, world!")
+expected_output: "hello, world!\n"
