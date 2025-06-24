@@ -16,7 +16,7 @@ DEFAULT_CONFIG = {
             "code_filename": "main.py"
         },
         "javascript": {
-            "image": "frappe/falcon-javascript:latest",
+            "image": "frappedevs/falcon-javascript:latest",
             "command": [],
             "code_filename": "main.js"
         },
