@@ -2,3 +2,5 @@ pytest
 pytest-asyncio
 pyyaml
 httpx
+starlette
+aiodocker
