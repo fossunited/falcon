@@ -30,6 +30,11 @@ DEFAULT_CONFIG = {
             "command": [],
             "code_filename": "main.go"
         },
+        "c": {
+            "image": "fossunited/falcon-c",
+            "command": [],
+            "code_filename": "main.c"
+        },
         "joy": {
             "image": "falcon-joy",
             "command": ["python", "/opt/start.py"],

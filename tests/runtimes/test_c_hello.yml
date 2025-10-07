@@ -1,0 +1,9 @@
+runtime: c
+code: |
+  #include <stdio.h>
+  int main() {
+     printf("Hello from C runtime!\n");
+     return 0;
+  }
+expected_output: "Hello from C runtime!\n"
+
