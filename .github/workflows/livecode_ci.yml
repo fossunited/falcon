@@ -1,14 +1,17 @@
 name: Livecode (Code Sanity Check & Test)
 
-on: [ push, pull_request ]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
 
 jobs:
   sanity_check:
     runs-on: ubuntu-latest
     name: Sanity Check
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.x'
       - name: Installing dependencies
@@ -23,8 +26,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Test Cases
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.x'
       - name: Installing Dependencies
