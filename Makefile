@@ -5,7 +5,10 @@ default: run
 build-c-runtime:
 	docker build -t fossunited/falcon-c ./runtimes/c
 
-setup: build-c-runtime
+build-cpp-runtime:
+	docker build -t fossunited/falcon-cpp ./runtimes/cpp
+
+setup: build-c-runtime build-cpp-runtime
 	docker pull fossunited/falcon-python:3.9
 	docker pull fossunited/falcon-golang
 	docker pull fossunited/falcon-rust

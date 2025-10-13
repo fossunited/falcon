@@ -35,6 +35,11 @@ DEFAULT_CONFIG = {
             "command": [],
             "code_filename": "main.c"
         },
+        "cpp": {
+            "image": "fossunited/falcon-cpp",
+            "command": [],
+            "code_filename": "main.cpp"
+        },
         "joy": {
             "image": "falcon-joy",
             "command": ["python", "/opt/start.py"],
