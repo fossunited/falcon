@@ -1,0 +1,10 @@
+runtime: cpp
+code: |
+  #include <iostream>
+  int main() {
+     std::cout << "Hello from C++ runtime!" << std::endl;
+     return 0;
+  }
+expected_output: "Hello from C++ runtime!\n"
+
+
